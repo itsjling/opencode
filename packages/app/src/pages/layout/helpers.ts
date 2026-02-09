@@ -11,6 +11,11 @@ export const workspaceKey = (directory: string) => {
 export function sortSessions(now: number) {
   const oneMinuteAgo = now - 60 * 1000
   return (a: Session, b: Session) => {
+    const aPinned = a.time?.pinned ?? 0
+    const bPinned = b.time?.pinned ?? 0
+    if (aPinned && !bPinned) return -1
+    if (!aPinned && bPinned) return 1
+    if (aPinned && bPinned) return bPinned - aPinned
     const aUpdated = a.time.updated ?? a.time.created
     const bUpdated = b.time.updated ?? b.time.created
     const aRecent = aUpdated > oneMinuteAgo

@@ -38,7 +38,6 @@ export function DialogSessionList() {
     const today = new Date().toDateString()
     return sessions()
       .filter((x) => x.parentID === undefined)
-      .toSorted((a, b) => b.time.updated - a.time.updated)
       .map((x) => {
         const date = new Date(x.time.updated)
         let category = date.toDateString()
@@ -48,13 +47,14 @@ export function DialogSessionList() {
         const isDeleting = toDelete() === x.id
         const status = sync.data.session_status?.[x.id]
         const isWorking = status?.type === "busy"
+        const isPinned = x.time.pinned && x.time.pinned > 0
         return {
           title: isDeleting ? `Press ${keybind.print("session_delete")} again to confirm` : x.title,
           bg: isDeleting ? theme.error : undefined,
           value: x.id,
-          category,
+          category: isPinned ? "Pinned" : category,
           footer: Locale.time(x.time.updated),
-          gutter: isWorking ? <Spinner /> : undefined,
+          gutter: isWorking ? <Spinner /> : isPinned ? <text>📌</text> : undefined,
         }
       })
   })
@@ -100,6 +100,19 @@ export function DialogSessionList() {
           title: "rename",
           onTrigger: async (option) => {
             dialog.replace(() => <DialogSessionRename session={option.value} />)
+          },
+        },
+        {
+          keybind: { name: "p", ctrl: false, meta: false, shift: false, super: false, leader: false },
+          title: "pin",
+          onTrigger: async (option) => {
+            const session = sessions().find((s) => s.id === option.value)
+            if (!session) return
+            const newPinned = !(session.time.pinned && session.time.pinned > 0)
+            await sdk.client.session.update({
+              sessionID: option.value,
+              pinned: newPinned,
+            })
           },
         },
       ]}

@@ -1090,6 +1090,7 @@ export class Session extends HeyApiClient {
       sessionID: string
       directory?: string
       title?: string
+      pinned?: boolean
       time?: {
         archived?: number
       }
@@ -1104,6 +1105,7 @@ export class Session extends HeyApiClient {
             { in: "path", key: "sessionID" },
             { in: "query", key: "directory" },
             { in: "body", key: "title" },
+            { in: "body", key: "pinned" },
             { in: "body", key: "time" },
           ],
         },

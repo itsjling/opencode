@@ -105,8 +105,13 @@ export function DialogSelect<T>(props: DialogSelectProps<T>) {
     const result = pipe(
       filtered(),
       groupBy((x) => x.category ?? ""),
-      // mapValues((x) => x.sort((a, b) => a.title.localeCompare(b.title))),
       entries(),
+      (entries) =>
+        entries.toSorted((a, b) => {
+          if (a[0] === "Pinned") return -1
+          if (b[0] === "Pinned") return 1
+          return 0
+        }),
     )
     return result
   })
