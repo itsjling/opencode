@@ -54,7 +54,7 @@ export function DialogSessionList() {
           value: x.id,
           category: isPinned ? "Pinned" : category,
           footer: Locale.time(x.time.updated),
-          gutter: isWorking ? <Spinner /> : isPinned ? "📌" : undefined,
+          gutter: isWorking ? <Spinner /> : isPinned ? <text>📌</text> : undefined,
         }
       })
   })
