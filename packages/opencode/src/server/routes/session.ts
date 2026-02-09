@@ -63,6 +63,14 @@ export const SessionRoutes = lazy(() =>
           sessions.push(session)
           if (query.limit !== undefined && sessions.length >= query.limit) break
         }
+        sessions.sort((a, b) => {
+          const aPinned = a.time.pinned ?? 0
+          const bPinned = b.time.pinned ?? 0
+          if (aPinned && bPinned) return bPinned - aPinned
+          if (aPinned) return -1
+          if (bPinned) return 1
+          return b.time.updated - a.time.updated
+        })
         return c.json(sessions)
       },
     )
@@ -265,6 +273,7 @@ export const SessionRoutes = lazy(() =>
         "json",
         z.object({
           title: z.string().optional(),
+          pinned: z.boolean().optional(),
           time: z
             .object({
               archived: z.number().optional(),
@@ -281,6 +290,9 @@ export const SessionRoutes = lazy(() =>
           (session) => {
             if (updates.title !== undefined) {
               session.title = updates.title
+            }
+            if (updates.pinned !== undefined) {
+              session.time.pinned = updates.pinned ? Date.now() : undefined
             }
             if (updates.time?.archived !== undefined) session.time.archived = updates.time.archived
           },

@@ -791,6 +791,7 @@ export type Session = {
     updated: number
     compacting?: number
     archived?: number
+    pinned?: number
   }
   permission?: PermissionRuleset
   revert?: {
@@ -3015,6 +3016,7 @@ export type SessionGetResponse = SessionGetResponses[keyof SessionGetResponses]
 export type SessionUpdateData = {
   body?: {
     title?: string
+    pinned?: boolean
     time?: {
       archived?: number
     }
